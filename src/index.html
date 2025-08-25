@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <title>Guide - Modern & Youthful</title>
+
+    <script type="module" src="/scripts/index.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="main-header container">
+        <a class="brand-name" href="#/">Let's Talks.</a>
+
+        <!-- Center Navigation -->
+        <nav class="center-nav">
+            <a href="#/" class="nav-link">Story List</a>
+            <a href="#/stories" class="nav-link">Create Story</a>
+        </nav>
+
+        <!-- Right Side Icons and Auth -->
+        <div class="header-right">
+          <div class="notification-container">
+            <button class="icon-btn notification-btn" title="Notifications">
+              <i class="fas fa-bell"></i>
+            </button>
+            <div class="popover notification-popover">
+              <div class="popover-header">
+                <h3><i class="fas fa-bell"></i> Notifications</h3>
+              </div>
+              <div class="popover-content">
+                <div class="empty-state">
+                  <i class="fas fa-bell-slash"></i>
+                  <h4>No notifications yet</h4>
+                  <p>You'll receive notifications about new stories, comments, and updates here.</p>
+                </div>
+              </div>
+              <div class="popover-footer">
+                <button class="popover-footer-btn">View All Notifications</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="subscribe-container">
+            <button class="icon-btn subscribe-btn" title="Subscribe">
+              <i class="fas fa-heart"></i>
+            </button>
+            <div class="popover subscribe-popover">
+              <div class="popover-header">
+                <h3><i class="fas fa-heart"></i> Subscription</h3>
+              </div>
+              <div class="popover-content">
+                <div class="popover-item subscribe-item">
+                  <div class="popover-item-icon">
+                    <i class="fas fa-crown"></i>
+                  </div>
+                  <div class="popover-item-content">
+                    <h4>Premium Stories</h4>
+                    <p>Get access to exclusive premium content and early releases</p>
+                  </div>
+                </div>
+                <div class="popover-item subscribe-item">
+                  <div class="popover-item-icon">
+                    <i class="fas fa-envelope"></i>
+                  </div>
+                  <div class="popover-item-content">
+                    <h4>Newsletter</h4>
+                    <p>Weekly digest of trending stories and writing tips</p>
+                  </div>
+                </div>
+                <div class="popover-item subscribe-item">
+                  <div class="popover-item-icon">
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div class="popover-item-content">
+                    <h4>Community Access</h4>
+                    <p>Join our exclusive community of storytellers and readers</p>
+                  </div>
+                </div>
+              </div>
+              <div class="popover-footer">
+                <button class="popover-footer-btn">Subscribe Now - $9.99/month</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Auth buttons - show based on login state -->
+          <div class="auth-section">
+            <!-- When not logged in -->
+            <button id="login-btn" class="btn-login auth-when-out">Log In</button>
+            
+            <!-- When logged in -->
+            <button id="logout-btn" class="btn-logout auth-when-in" style="display: none;">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Navigation Drawer -->
+        <nav id="navigation-drawer" class="navigation-drawer">
+          <ul id="nav-list" class="nav-list">
+            <li><a href="#/">Daftar Cerita</a></li>
+            <li><a href="#/stories">Buat Cerita</a></li>
+          </ul>
+          
+          <!-- Mobile Auth buttons -->
+          <div class="mobile-auth-section">
+            <button class="icon-btn notification-btn-mobile">
+              <i class="fas fa-bell"></i> Notifications
+            </button>
+            <button class="icon-btn subscribe-btn-mobile">
+              <i class="fas fa-heart"></i> Subscribe
+            </button>
+            
+            <!-- Mobile auth based on login state -->
+            <button class="btn-login mobile-auth-when-out">Log In</button>
+            <button class="btn-logout mobile-auth-when-in" style="display: none;">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </nav>
+
+        <button id="drawer-button" class="drawer-button">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </header>
+
+    <main id="main-content" class="main-content"></main>
+  </body>
+</html>
