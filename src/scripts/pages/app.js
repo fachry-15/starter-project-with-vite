@@ -7,6 +7,7 @@ class App {
   #drawerButton = null;
   #navigationDrawer = null;
   #isLoggedIn = false;
+  #currentPageInstance = null;
 
   constructor({ navigationDrawer, drawerButton, content }) {
     this.#content = content;
@@ -134,6 +135,14 @@ class App {
   async renderPage() {
     const url = getActiveRoute();
     const page = routes[url];
+    
+    // Check if previous page instance has a destroy method and call it.
+    if (this.#currentPageInstance && typeof this.#currentPageInstance.destroy === 'function') {
+      this.#currentPageInstance.destroy();
+    }
+    
+    // Create new page instance if it's a class
+    this.#currentPageInstance = (typeof page === 'function') ? new page() : page;
 
     if (document.startViewTransition) {
         document.startViewTransition(async () => {
@@ -142,8 +151,10 @@ class App {
                 mainContent.classList.remove('auth-page');
             }
 
-            this.#content.innerHTML = await page.render();
-            await page.afterRender();
+            this.#content.innerHTML = await this.#currentPageInstance.render();
+            if (typeof this.#currentPageInstance.afterRender === 'function') {
+              await this.#currentPageInstance.afterRender();
+            }
             
             this.#updateActiveNavigation(url);
         });
@@ -153,8 +164,10 @@ class App {
             mainContent.classList.remove('auth-page');
         }
 
-        this.#content.innerHTML = await page.render();
-        await page.afterRender();
+        this.#content.innerHTML = await this.#currentPageInstance.render();
+        if (typeof this.#currentPageInstance.afterRender === 'function') {
+          await this.#currentPageInstance.afterRender();
+        }
         
         this.#updateActiveNavigation(url);
     }

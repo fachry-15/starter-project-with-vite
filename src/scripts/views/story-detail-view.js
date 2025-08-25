@@ -47,6 +47,9 @@ class StoryDetailView {
 
     storyContent.innerHTML = `
       <div class="story-detail-main" style="background: #fff; border-radius: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); padding: 40px 32px; width: 100%; max-width: 1100px; margin: 0 auto; min-height: 480px;">
+        <h1 class="story-title" style="font-size: 2.2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 24px;">
+          Detail Cerita
+        </h1>
         <div class="story-detail-row" style="display: flex; gap: 40px; align-items: stretch;">
           <div class="story-image-large" style="flex: 1.1; display: flex; align-items: stretch;">
             <img src="${story.photoUrl}" alt="${story.name}'s story" style="width: 100%; height: 100%; min-height: 360px; max-height: 500px; border-radius: 20px; object-fit: cover; box-shadow: 0 2px 16px rgba(0,0,0,0.08); display: block;">
@@ -68,7 +71,7 @@ class StoryDetailView {
                   ` : ''}
                 </div>
               </div>
-              <button class="btn btn-primary" style="width: fit-content; font-size: 1rem; padding: 10px 28px;">Bagikan Cerita</button>
+              
               <div class="story-description" style="flex:1;">
                 <h3 style="margin-bottom:10px; font-size: 1.2rem;">Deskripsi Cerita</h3>
                 <p style="margin:0; font-size: 1.05rem; color: #444;">${story.description}</p>
@@ -167,7 +170,7 @@ class StoryDetailView {
 
   hideElement(element) {
     if (element) element.style.display = 'none';
-  }
+    }
 }
 
 export default StoryDetailView;

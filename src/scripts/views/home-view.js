@@ -1,8 +1,10 @@
 import L from 'leaflet';
+import CONFIG from '../config.js';
 
 class HomeView {
   constructor() {
     this.container = document.getElementById('stories-container');
+    this.leafletMap = null;
   }
 
   initListeners(handlers) {
@@ -62,6 +64,52 @@ class HomeView {
     } else {
       this.hideElement(mapWrapper);
       this.showElement(toggleMapBtn);
+    }
+  }
+
+  renderMap(stories) {
+    const storiesWithLocation = stories.filter(story => story.lat && story.lon);
+
+    if (storiesWithLocation.length === 0) {
+      this.hideMapWrapper();
+      return;
+    }
+
+    if (this.leafletMap) {
+      this.leafletMap.remove();
+    }
+    
+    this.leafletMap = L.map(this.getMapContainerId()).setView(
+      [storiesWithLocation[0].lat, storiesWithLocation[0].lon], 4
+    );
+
+    // Define multiple tile layers
+    const streets = L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${CONFIG.MAPTILER_API_KEY}`, {
+      attribution: '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
+      maxZoom: 18,
+    }).addTo(this.leafletMap);
+
+    const basic = L.tileLayer(`https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${CONFIG.MAPTILER_API_KEY}`, {
+      attribution: '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
+      maxZoom: 18,
+    });
+
+    // Add layer control
+    const baseMaps = {
+        "Streets": streets,
+        "Basic": basic
+    };
+
+    L.control.layers(baseMaps).addTo(this.leafletMap);
+
+    storiesWithLocation.forEach(story => {
+      const marker = L.marker([story.lat, story.lon]).addTo(this.leafletMap);
+      marker.bindPopup(`<strong>${story.name}</strong><br><em>${story.description.substring(0, 60)}...</em><br><a href="#/story/${story.id}">Lihat Detail</a>`);
+    });
+
+    if (storiesWithLocation.length > 1) {
+      const bounds = L.latLngBounds(storiesWithLocation.map(s => [s.lat, s.lon]));
+      this.leafletMap.fitBounds(bounds, { padding: [30, 30] });
     }
   }
 

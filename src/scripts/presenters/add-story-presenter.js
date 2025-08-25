@@ -14,6 +14,8 @@ class AddStoryPresenter {
     this.lon = null;
     this.leafletMap = null;
     this.mapMarker = null;
+
+    this._handlePageChange = this._handlePageChange.bind(this);
   }
 
   async init() {
@@ -25,7 +27,26 @@ class AddStoryPresenter {
       onPhotoSelected: this._handlePhotoSelected.bind(this),
     });
 
+    window.addEventListener('hashchange', this._handlePageChange);
+
     this._initializePage();
+  }
+
+  destroy() {
+    window.removeEventListener('hashchange', this._handlePageChange);
+    this._stopCameraStreamIfActive();
+  }
+
+  _stopCameraStreamIfActive() {
+    if (this.currentStream) {
+      this.view.stopCameraStream(this.currentStream);
+      this.currentStream = null;
+      console.log('Kamera dihentikan karena navigasi halaman.');
+    }
+  }
+
+  _handlePageChange() {
+    this._stopCameraStreamIfActive();
   }
 
   async _initializePage() {
@@ -45,23 +66,14 @@ class AddStoryPresenter {
         "Satellite": satellite
     };
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          this.lat = lat;
-          this.lon = lon;
-          this.view.initializeMap(lat, lon, { onMapClick: this._handleMapClick.bind(this) }, baseMaps);
-        },
-        (error) => {
-          console.error("Geolocation is not supported or permission denied: ", error);
-          this.view.initializeMap(0, 0, { onMapClick: this._handleMapClick.bind(this) }, baseMaps);
-        }
-      );
-    } else {
-      console.warn("Geolocation is not supported by this browser.");
+    try {
+      const location = await this.model.getGeolocation();
+      this.lat = location.lat;
+      this.lon = location.lon;
+      this.view.initializeMap(this.lat, this.lon, { onMapClick: this._handleMapClick.bind(this) }, baseMaps);
+    } catch (error) {
       this.view.initializeMap(0, 0, { onMapClick: this._handleMapClick.bind(this) }, baseMaps);
+      console.warn('Geolocation not available. Defaulting to (0,0).');
     }
   }
 
@@ -87,23 +99,12 @@ class AddStoryPresenter {
     this.view.setLoadingState(true);
 
     try {
-      const authToken = localStorage.getItem('authToken');
-
-      if (authToken) {
-        await this.model.addStory({
-          description,
-          photo,
-          lat: this.lat,
-          lon: this.lon
-        });
-      } else {
-        await this.model.addGuestStory({
-          description,
-          photo,
-          lat: this.lat,
-          lon: this.lon
-        });
-      }
+      await this.model.submitStory({
+        description,
+        photo,
+        lat: this.lat,
+        lon: this.lon
+      });
 
       showNotification('Cerita berhasil ditambahkan!', 'success');
       this.view.setLoadingState(false);
@@ -122,12 +123,10 @@ class AddStoryPresenter {
       if (this.currentStream) {
         this.view.stopCameraStream(this.currentStream);
         this.currentStream = null;
-        this.view.cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Ambil dari Kamera';
-        this.view.captureBtn.style.display = 'none';
+        this.view.setCameraState(false);
       } else {
         this.currentStream = await this.view.startCameraStream();
-        this.view.cameraBtn.innerHTML = '<i class="fas fa-video-slash"></i> Tutup Kamera';
-        this.view.captureBtn.style.display = 'inline-block';
+        this.view.setCameraState(true);
       }
     } catch (error) {
       showNotification('Akses kamera ditolak atau tidak tersedia.', 'error');
@@ -138,8 +137,7 @@ class AddStoryPresenter {
     this.view.capturePhoto();
     this.view.stopCameraStream(this.currentStream);
     this.currentStream = null;
-    this.view.cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Ambil dari Kamera';
-    this.view.captureBtn.style.display = 'none';
+    this.view.setCameraState(false);
   }
   
   _handlePhotoSelected(file) {

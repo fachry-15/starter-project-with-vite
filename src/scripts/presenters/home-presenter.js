@@ -37,13 +37,7 @@ class HomePresenter {
   async _loadStories() {
     this.view.showLoading();
     try {
-      const authToken = localStorage.getItem('authToken');
-      if (!authToken) {
-        this.view.showLoginRequired();
-        return;
-      }
-      
-      const stories = await this.model.fetchStories();
+      const stories = await this.model.fetchAuthenticatedStories();
       
       if (stories.length > 0) {
         this.allStories = stories;
@@ -63,8 +57,7 @@ class HomePresenter {
         : error.message;
       
       if (errorMessage === 'Missing authentication') {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userData');
+        this.model.clearAuthData();
         this.view.showLoginRequired();
       } else {
         this.view.showError(error.message || 'Unable to load stories at the moment.');
@@ -82,7 +75,7 @@ class HomePresenter {
     const storiesWithLocations = await Promise.all(
       this.displayedStories.map(async (story) => {
         if (story.lat && story.lon) {
-          const locationName = await this._getLocationName(story.lat, story.lon);
+          const locationName = await this.model.getLocationName(story.lat, story.lon);
           return { ...story, locationName };
         }
         return story;
@@ -95,31 +88,6 @@ class HomePresenter {
     
     const hasMoreStories = endIndex < this.allStories.length;
     this.view.updateLoadMoreButton(this.displayedStories.length, this.allStories.length, hasMoreStories);
-  }
-
-  async _getLocationName(lat, lon) {
-    const cacheKey = `${lat},${lon}`;
-    if (this.locationCache.has(cacheKey)) {
-      return this.locationCache.get(cacheKey);
-    }
-
-    try {
-      const response = await fetch(
-        `https://api.maptiler.com/geocoding/${lon},${lat}.json?key=${CONFIG.MAPTILER_API_KEY}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        let locationName = 'Lokasi tidak dikenal';
-        if (data && data.features && data.features.length > 0) {
-          locationName = data.features[0].place_name || locationName;
-        }
-        this.locationCache.set(cacheKey, locationName);
-        return locationName;
-      }
-    } catch (error) {
-      console.warn('Error getting location name:', error);
-    }
-    return 'Lokasi tersedia';
   }
 
   _initializeMapVisualization(stories) {

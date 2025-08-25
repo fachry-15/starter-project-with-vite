@@ -78,6 +78,16 @@ class AddStoryView {
     });
   }
 
+  setCameraState(isCameraOn) {
+    if (isCameraOn) {
+      this.cameraBtn.innerHTML = '<i class="fas fa-video-slash"></i> Tutup Kamera';
+      this.captureBtn.style.display = 'inline-block';
+    } else {
+      this.cameraBtn.innerHTML = '<i class="fas fa-camera"></i> Ambil dari Kamera';
+      this.captureBtn.style.display = 'none';
+    }
+  }
+
   startCameraStream() {
     return new Promise(async (resolve, reject) => {
       try {
