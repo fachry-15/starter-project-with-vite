@@ -9,22 +9,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/styles/styles.css" />
-    <title>Guide - Modern & Youthful</title>
+    <title>Guide - Modern &amp; Youthful</title>
 
     <script type="module" src="/scripts/index.js"></script>
   </head>
   <body>
+    <a href="#main-content" class="skip-link">Skip to Content</a>
     <header>
       <div class="main-header container">
         <a class="brand-name" href="#/">Let's Talks.</a>
 
-        <!-- Center Navigation -->
         <nav class="center-nav">
             <a href="#/" class="nav-link">Story List</a>
             <a href="#/stories" class="nav-link">Create Story</a>
         </nav>
 
-        <!-- Right Side Icons and Auth -->
         <div class="header-right">
           <div class="notification-container">
             <button class="icon-btn notification-btn" title="Notifications">
@@ -90,26 +89,21 @@
             </div>
           </div>
           
-          <!-- Auth buttons - show based on login state -->
           <div class="auth-section">
-            <!-- When not logged in -->
             <button id="login-btn" class="btn-login auth-when-out">Log In</button>
             
-            <!-- When logged in -->
             <button id="logout-btn" class="btn-logout auth-when-in" style="display: none;">
               <i class="fas fa-sign-out-alt"></i> Logout
             </button>
           </div>
         </div>
 
-        <!-- Mobile Navigation Drawer -->
         <nav id="navigation-drawer" class="navigation-drawer">
           <ul id="nav-list" class="nav-list">
             <li><a href="#/">Daftar Cerita</a></li>
             <li><a href="#/stories">Buat Cerita</a></li>
           </ul>
           
-          <!-- Mobile Auth buttons -->
           <div class="mobile-auth-section">
             <button class="icon-btn notification-btn-mobile">
               <i class="fas fa-bell"></i> Notifications
@@ -118,7 +112,6 @@
               <i class="fas fa-heart"></i> Subscribe
             </button>
             
-            <!-- Mobile auth based on login state -->
             <button class="btn-login mobile-auth-when-out">Log In</button>
             <button class="btn-logout mobile-auth-when-in" style="display: none;">
               <i class="fas fa-sign-out-alt"></i> Logout

@@ -12,8 +12,9 @@ class AddStoryView {
     this.videoElement = document.getElementById('camera-stream');
     this.photoPreview = document.getElementById('photo-preview');
     this.mapContainer = document.getElementById('story-map');
-    this.coordinatesInfo = document.getElementById('coordinates-info');
     this.submitBtn = document.getElementById('submit-btn');
+    this.uploadBtn = document.querySelector('.upload-btn');
+    this.fileNameDisplay = document.getElementById('file-name');
 
     this.map = null;
     this.mapMarker = null;
@@ -31,6 +32,7 @@ class AddStoryView {
     if (this.photoInput) {
       this.photoInput.addEventListener('change', (e) => {
         handlers.onPhotoSelected(e.target.files[0]);
+        this.updateFileName(e.target.files[0]);
       });
     }
 
@@ -41,6 +43,10 @@ class AddStoryView {
     if (this.captureBtn) {
       this.captureBtn.addEventListener('click', () => handlers.onCaptureClick());
     }
+
+    if (this.uploadBtn) {
+        this.uploadBtn.addEventListener('click', () => this.photoInput.click());
+    }
   }
 
   getFormData() {
@@ -49,28 +55,27 @@ class AddStoryView {
       photo: this.photoInput.files[0],
     };
   }
-
-  updateMapCoordinates(lat, lon) {
-    this.coordinatesInfo.textContent = `Lat: ${lat.toFixed(4)}, Lon: ${lon.toFixed(4)}`;
-  }
   
-  initializeMap(lat, lon, handlers) {
+  // Updated to accept baseMaps as a parameter
+  initializeMap(lat, lon, handlers, baseMaps) {
     if (this.map) {
       this.map.remove();
     }
     
     this.map = L.map(this.mapContainer).setView([lat, lon], 13);
     
-    L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${CONFIG.MAPTILER_API_KEY}`, {
-      attribution: '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
-    }).addTo(this.map);
+    // Add layer control
+    if (baseMaps) {
+        L.control.layers(baseMaps).addTo(this.map);
+        // Add one of the layers to the map by default
+        baseMaps.Streets.addTo(this.map);
+    }
 
     this.map.on('click', (e) => {
       if (this.mapMarker) {
         this.map.removeLayer(this.mapMarker);
       }
       this.mapMarker = L.marker(e.latlng).addTo(this.map);
-      this.updateMapCoordinates(e.latlng.lat, e.latlng.lng);
       handlers.onMapClick(e.latlng.lat, e.latlng.lng);
     });
   }
@@ -85,6 +90,7 @@ class AddStoryView {
         this.videoElement.style.display = 'block';
         this.photoPreview.style.display = 'none';
         this.videoElement.onloadedmetadata = () => resolve(stream);
+        this.fileNameDisplay.textContent = 'Menggunakan kamera...';
       } catch (err) {
         console.error('Error accessing the camera:', err);
         reject(err);
@@ -113,6 +119,7 @@ class AddStoryView {
       dataTransfer.items.add(file);
       this.photoInput.files = dataTransfer.files;
       this.showPhotoPreview(file);
+      this.updateFileName(file);
     }, 'image/png');
   }
 
@@ -123,6 +130,14 @@ class AddStoryView {
       this.photoPreview.style.display = 'block';
     };
     reader.readAsDataURL(file);
+  }
+
+  updateFileName(file) {
+    if (file && this.fileNameDisplay) {
+      this.fileNameDisplay.textContent = file.name;
+    } else if (this.fileNameDisplay) {
+      this.fileNameDisplay.textContent = 'Belum ada file yang dipilih';
+    }
   }
 
   showNotification(message, type) {

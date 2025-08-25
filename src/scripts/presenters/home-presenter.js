@@ -133,14 +133,29 @@ class HomePresenter {
     if (this.leafletMap) {
       this.leafletMap.remove();
     }
+    
     this.leafletMap = L.map(this.view.getMapContainerId()).setView(
       [storiesWithLocation[0].lat, storiesWithLocation[0].lon], 4
     );
 
-    L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${CONFIG.MAPTILER_API_KEY}`, {
+    // Define multiple tile layers
+    const streets = L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${CONFIG.MAPTILER_API_KEY}`, {
       attribution: '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
       maxZoom: 18,
     }).addTo(this.leafletMap);
+
+    const basic = L.tileLayer(`https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${CONFIG.MAPTILER_API_KEY}`, {
+      attribution: '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
+      maxZoom: 18,
+    });
+
+    // Add layer control
+    const baseMaps = {
+        "Streets": streets,
+        "Basic": basic
+    };
+
+    L.control.layers(baseMaps).addTo(this.leafletMap);
 
     storiesWithLocation.forEach(story => {
       const marker = L.marker([story.lat, story.lon]).addTo(this.leafletMap);

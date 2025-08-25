@@ -2139,12 +2139,6 @@ header {
   margin-bottom: 1.5rem;
 }
 
-.login-required-content p {
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-}
-
 .login-actions {
   display: flex;
   gap: 1rem;
@@ -2523,4 +2517,243 @@ header {
 .loading-state, .error-state {
   text-align: center;
   padding: 40px;
+}
+/* ==================== ADD STORY PAGE STYLES ==================== */
+
+/* Textarea Consistency */
+.auth-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: white;
+  color: #1f2937;
+  resize: vertical;
+}
+
+.auth-form textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+}
+
+/* File and Camera Controls */
+.file-input-group input[type="file"] {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.file-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* Camera Stream and Photo Preview */
+.photo-preview-wrapper {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.photo-preview-wrapper video,
+.photo-preview-wrapper img {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #f0f0f0;
+  border: 1px solid #e0e0e0;
+}
+
+.photo-preview-wrapper video {
+  min-height: 200px;
+}
+
+/* Map Container */
+.map-container {
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.coordinates-info {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+/* Tambahan CSS untuk layout satu layar penuh */
+.main-content {
+  padding: 0;
+}
+
+.story-add-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0;
+  background-color: #f8fafc;
+}
+
+.story-add-card {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin: 24px;
+}
+
+.form-section {
+  flex: 1;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.form-header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--secondary-color);
+  margin-bottom: 8px;
+}
+
+.form-header p {
+  font-size: 1rem;
+  color: #666;
+}
+
+.story-form .form-group {
+  margin-bottom: 24px;
+}
+
+.map-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f0f4f7;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.photo-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.file-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-input-wrapper input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-name {
+  font-size: 0.9rem;
+  color: #6c757d;
+  flex-grow: 1;
+}
+
+.upload-btn {
+  font-size: 0.9rem;
+  padding: 10px 18px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.story-form textarea,
+.auth-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: white;
+  color: #1f2937;
+  resize: vertical; /* Memungkinkan pengguna mengubah ukuran vertikal */
+}
+
+/* Tambahan: Efek fokus untuk textarea */
+.story-form textarea:focus,
+.auth-form textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  text-decoration: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Responsive styles for mobile */
+@media (max-width: 900px) {
+  .story-add-card {
+    flex-direction: column;
+    margin: 16px;
+  }
+
+  .form-section {
+    padding: 24px;
+  }
+
+  .map-section {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-header h1 {
+    font-size: 1.8rem;
+  }
 }

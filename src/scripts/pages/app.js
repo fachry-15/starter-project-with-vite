@@ -153,17 +153,33 @@ class App {
     const url = getActiveRoute();
     const page = routes[url];
 
-    // Remove auth-page class from previous pages
-    const mainContent = document.getElementById('main-content');
-    if (mainContent) {
-      mainContent.classList.remove('auth-page');
-    }
+    if (document.startViewTransition) {
+        document.startViewTransition(async () => {
+            // Remove auth-page class from previous pages
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.classList.remove('auth-page');
+            }
 
-    this.#content.innerHTML = await page.render();
-    await page.afterRender();
-    
-    // Update active navigation
-    this.#updateActiveNavigation(url);
+            this.#content.innerHTML = await page.render();
+            await page.afterRender();
+            
+            // Update active navigation
+            this.#updateActiveNavigation(url);
+        });
+    } else {
+        // Fallback for browsers that don't support View Transition API
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.classList.remove('auth-page');
+        }
+
+        this.#content.innerHTML = await page.render();
+        await page.afterRender();
+        
+        // Update active navigation
+        this.#updateActiveNavigation(url);
+    }
   }
 
   #updateActiveNavigation(currentRoute) {

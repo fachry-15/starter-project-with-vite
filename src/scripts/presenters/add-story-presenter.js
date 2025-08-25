@@ -1,5 +1,8 @@
 import AddStoryView from '../views/add-story-view';
 import StoryModel from '../models/story-model';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import CONFIG from '../config';
 
 class AddStoryPresenter {
   constructor(view, model) {
@@ -8,6 +11,8 @@ class AddStoryPresenter {
     this.currentStream = null;
     this.lat = null;
     this.lon = null;
+    this.leafletMap = null;
+    this.mapMarker = null;
   }
 
   async init() {
@@ -23,7 +28,25 @@ class AddStoryPresenter {
   }
 
   async _initializePage() {
-    // Gunakan geolocation API untuk mendapatkan lokasi awal
+    // Define tile layers
+    const streets = L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${CONFIG.MAPTILER_API_KEY}`, {
+        attribution: '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
+    });
+    const basic = L.tileLayer(`https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=${CONFIG.MAPTILER_API_KEY}`, {
+        attribution: '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
+    });
+    const satellite = L.tileLayer(`https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${CONFIG.MAPTILER_API_KEY}`, {
+        attribution: '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
+    });
+
+    // Create a baseMaps object for the layer control
+    const baseMaps = {
+        "Streets": streets,
+        "Basic": basic,
+        "Satellite": satellite
+    };
+
+    // Use geolocation API to get initial location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -31,17 +54,16 @@ class AddStoryPresenter {
           const lon = position.coords.longitude;
           this.lat = lat;
           this.lon = lon;
-          this.view.initializeMap(lat, lon, { onMapClick: this._handleMapClick.bind(this) });
-          this.view.updateMapCoordinates(lat, lon);
+          this.view.initializeMap(lat, lon, { onMapClick: this._handleMapClick.bind(this) }, baseMaps);
         },
         (error) => {
           console.error("Geolocation is not supported or permission denied: ", error);
-          this.view.initializeMap(0, 0, { onMapClick: this._handleMapClick.bind(this) });
+          this.view.initializeMap(0, 0, { onMapClick: this._handleMapClick.bind(this) }, baseMaps);
         }
       );
     } else {
       console.warn("Geolocation is not supported by this browser.");
-      this.view.initializeMap(0, 0, { onMapClick: this._handleMapClick.bind(this) });
+      this.view.initializeMap(0, 0, { onMapClick: this._handleMapClick.bind(this) }, baseMaps);
     }
   }
 
@@ -56,12 +78,23 @@ class AddStoryPresenter {
     this.view.setLoadingState(true);
 
     try {
-      await this.model.addStory({
-        description,
-        photo,
-        lat: this.lat,
-        lon: this.lon
-      });
+      const authToken = localStorage.getItem('authToken');
+
+      if (authToken) {
+        await this.model.addStory({
+          description,
+          photo,
+          lat: this.lat,
+          lon: this.lon
+        });
+      } else {
+        await this.model.addGuestStory({
+          description,
+          photo,
+          lat: this.lat,
+          lon: this.lon
+        });
+      }
 
       this.view.showNotification('Cerita berhasil ditambahkan!', 'success');
       this.view.setLoadingState(false);
@@ -109,7 +142,6 @@ class AddStoryPresenter {
   _handleMapClick(lat, lon) {
     this.lat = lat;
     this.lon = lon;
-    this.view.showNotification(`Lokasi dipilih: ${lat.toFixed(4)}, ${lon.toFixed(4)}`, 'info');
   }
 }
 

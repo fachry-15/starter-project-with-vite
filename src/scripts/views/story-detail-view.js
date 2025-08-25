@@ -92,10 +92,16 @@ class StoryDetailView {
 
     if (story.lat && story.lon) {
       this._fetchMapTilerAddress(story.lat, story.lon);
-      this._renderLeafletMap(story.lat, story.lon, story.name, story.description);
     }
   }
   
+  hideMapContainer() {
+    const mapSection = document.querySelector('.story-map-section');
+    if (mapSection) {
+      mapSection.style.display = 'none';
+    }
+  }
+
   showLoading() {
     this.hideElement(document.getElementById('error-state'));
     this.hideElement(document.getElementById('story-content'));
@@ -112,45 +118,25 @@ class StoryDetailView {
     this.showElement(document.getElementById('error-state'));
   }
 
-  async _fetchMapTilerAddress(lat, lon) {
+  _fetchMapTilerAddress(lat, lon) {
     try {
-      const res = await fetch(`https://api.maptiler.com/geocoding/${lon},${lat}.json?key=${CONFIG.MAPTILER_API_KEY}`);
-      const data = await res.json();
-      const address = (data && data.features && data.features.length > 0)
-        ? data.features[0].place_name
-        : 'Alamat tidak ditemukan';
-      const addressDiv = document.getElementById('osm-address');
-      if (addressDiv) addressDiv.textContent = address;
+      fetch(`https://api.maptiler.com/geocoding/${lon},${lat}.json?key=${CONFIG.MAPTILER_API_KEY}`)
+        .then(res => res.json())
+        .then(data => {
+          const address = (data && data.features && data.features.length > 0)
+            ? data.features[0].place_name
+            : 'Alamat tidak ditemukan';
+          const addressDiv = document.getElementById('osm-address');
+          if (addressDiv) addressDiv.textContent = address;
+        })
+        .catch(e => {
+          const addressDiv = document.getElementById('osm-address');
+          if (addressDiv) addressDiv.textContent = 'Gagal mengambil alamat';
+        });
     } catch (e) {
       const addressDiv = document.getElementById('osm-address');
       if (addressDiv) addressDiv.textContent = 'Gagal mengambil alamat';
     }
-  }
-
-  _renderLeafletMap(lat, lon, name, description) {
-    const mapDiv = document.getElementById('story-leaflet-map');
-    if (!mapDiv) return;
-
-    if (this._leafletMap) {
-      this._leafletMap.remove();
-      this._leafletMap = null;
-    }
-
-    this._leafletMap = L.map(mapDiv).setView([lat, lon], 13);
-
-    L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${CONFIG.MAPTILER_API_KEY}`, {
-      attribution: '© <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
-      maxZoom: 18,
-    }).addTo(this._leafletMap);
-
-    L.marker([lat, lon])
-      .addTo(this._leafletMap)
-      .bindPopup(`<strong>${name}</strong><br>${description ? this._truncateText(description, 60) : ''}`)
-      .openPopup();
-
-    setTimeout(() => {
-      this._leafletMap.invalidateSize();
-    }, 200);
   }
   
   _formatDate(dateString) {
@@ -168,6 +154,11 @@ class StoryDetailView {
   _truncateText(text, maxLength = 60) {
     if (!text) return '';
     return text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+  }
+  
+  // New method to get the map container ID
+  getMapContainerId() {
+    return 'story-leaflet-map';
   }
 
   showElement(element) {

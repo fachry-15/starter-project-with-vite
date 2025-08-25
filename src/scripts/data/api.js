@@ -7,6 +7,7 @@ const ENDPOINTS = {
   LOGIN: `${API_BASE_URL}/login`,
   STORIES: `${API_BASE_URL}/stories`,
   ADD_STORY: `${API_BASE_URL}/stories`,
+  ADD_GUEST_STORY: `${API_BASE_URL}/stories/guest`, // New endpoint for guest stories
   STORY_DETAIL: (id) => `${API_BASE_URL}/stories/${id}`,
 };
 
@@ -186,6 +187,41 @@ export async function addStory({ description, photo, lat, lon }) {
     
     if (!response.ok) {
       throw new Error(result.message || 'Failed to add story');
+    }
+
+    return {
+      success: true,
+      message: result.message,
+      data: result
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message
+    };
+  }
+}
+
+export async function addGuestStory({ description, photo, lat, lon }) {
+  try {
+    const formData = new FormData();
+    formData.append('description', description);
+    formData.append('photo', photo);
+
+    if (lat && lon) {
+      formData.append('lat', lat);
+      formData.append('lon', lon);
+    }
+
+    const response = await fetch(ENDPOINTS.ADD_GUEST_STORY, {
+      method: 'POST',
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to add guest story');
     }
 
     return {
