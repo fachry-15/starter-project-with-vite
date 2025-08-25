@@ -2736,6 +2736,69 @@ header {
   top: 0;
 }
 
+.notification {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 16px 20px;
+  min-width: 280px;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%) translateY(20px);
+}
+
+.notification.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.notification-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.notification-content span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.notification-content i {
+  font-size: 1.1rem;
+}
+
+.notification-success {
+  border-left: 4px solid var(--success-color);
+}
+
+.notification-success i {
+  color: var(--success-color);
+}
+
+.notification-error {
+  border-left: 4px solid var(--error-color);
+}
+
+.notification-error i {
+  color: var(--error-color);
+}
+
+.notification-info {
+  border-left: 4px solid var(--info-color);
+}
+
+.notification-info i {
+  color: var(--info-color);
+}
 /* Responsive styles for mobile */
 @media (max-width: 900px) {
   .story-add-card {

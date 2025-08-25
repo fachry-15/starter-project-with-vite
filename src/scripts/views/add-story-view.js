@@ -1,6 +1,7 @@
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import CONFIG from '../config.js';
+import { showNotification } from '../utils/index.js';
 
 class AddStoryView {
   constructor() {
@@ -56,7 +57,6 @@ class AddStoryView {
     };
   }
   
-  // Updated to accept baseMaps as a parameter
   initializeMap(lat, lon, handlers, baseMaps) {
     if (this.map) {
       this.map.remove();
@@ -64,10 +64,8 @@ class AddStoryView {
     
     this.map = L.map(this.mapContainer).setView([lat, lon], 13);
     
-    // Add layer control
     if (baseMaps) {
         L.control.layers(baseMaps).addTo(this.map);
-        // Add one of the layers to the map by default
         baseMaps.Streets.addTo(this.map);
     }
 
@@ -141,15 +139,7 @@ class AddStoryView {
   }
 
   showNotification(message, type) {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `<div class="notification-content"><i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span></div>`;
-    document.body.appendChild(notification);
-    setTimeout(() => notification.classList.add('show'), 100);
-    setTimeout(() => {
-      notification.classList.remove('show');
-      setTimeout(() => notification.remove(), 300);
-    }, 4000);
+    showNotification(message, type);
   }
 
   setLoadingState(loading) {

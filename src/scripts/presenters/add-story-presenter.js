@@ -3,6 +3,7 @@ import StoryModel from '../models/story-model';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import CONFIG from '../config';
+import { showNotification } from '../utils/index.js';
 
 class AddStoryPresenter {
   constructor(view, model) {
@@ -28,7 +29,6 @@ class AddStoryPresenter {
   }
 
   async _initializePage() {
-    // Define tile layers
     const streets = L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${CONFIG.MAPTILER_API_KEY}`, {
         attribution: '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
     });
@@ -39,14 +39,12 @@ class AddStoryPresenter {
         attribution: '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>',
     });
 
-    // Create a baseMaps object for the layer control
     const baseMaps = {
         "Streets": streets,
         "Basic": basic,
         "Satellite": satellite
     };
 
-    // Use geolocation API to get initial location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -70,8 +68,19 @@ class AddStoryPresenter {
   async _handleFormSubmit(data) {
     const { description, photo } = data;
     
+    // Validasi file: pastikan ada foto, jenisnya gambar, dan ukurannya tidak lebih dari 1MB
     if (!description || !photo) {
-      this.view.showNotification('Deskripsi dan foto tidak boleh kosong.', 'error');
+      showNotification('Deskripsi dan foto tidak boleh kosong.', 'error');
+      return;
+    }
+
+    if (photo.size > 1000000) {
+      showNotification('Ukuran foto tidak boleh lebih dari 1 MB.', 'error');
+      return;
+    }
+
+    if (!photo.type.startsWith('image/')) {
+      showNotification('File yang diunggah harus berupa gambar.', 'error');
       return;
     }
 
@@ -96,14 +105,14 @@ class AddStoryPresenter {
         });
       }
 
-      this.view.showNotification('Cerita berhasil ditambahkan!', 'success');
+      showNotification('Cerita berhasil ditambahkan!', 'success');
       this.view.setLoadingState(false);
       setTimeout(() => {
         window.location.hash = '#/';
       }, 1500);
 
     } catch (error) {
-      this.view.showNotification(error.message, 'error');
+      showNotification(error.message, 'error');
       this.view.setLoadingState(false);
     }
   }
@@ -121,7 +130,7 @@ class AddStoryPresenter {
         this.view.captureBtn.style.display = 'inline-block';
       }
     } catch (error) {
-      this.view.showNotification('Akses kamera ditolak atau tidak tersedia.', 'error');
+      showNotification('Akses kamera ditolak atau tidak tersedia.', 'error');
     }
   }
   

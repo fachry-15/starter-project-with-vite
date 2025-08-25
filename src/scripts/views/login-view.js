@@ -1,3 +1,5 @@
+import { showNotification } from '../utils/index.js';
+
 class LoginView {
   constructor() {
     this.form = document.getElementById('login-form');
@@ -64,15 +66,7 @@ class LoginView {
   }
 
   showNotification(message, type) {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `<div class="notification-content"><i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span></div>`;
-    document.body.appendChild(notification);
-    setTimeout(() => notification.classList.add('show'), 100);
-    setTimeout(() => {
-      notification.classList.remove('show');
-      setTimeout(() => notification.remove(), 300);
-    }, 4000);
+    showNotification(message, type);
   }
 }
 
