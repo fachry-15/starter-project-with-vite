@@ -86,14 +86,14 @@ class App {
     // Notification button handlers
     notificationBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        alert('🔔 Notifications feature coming soon!');
+        this._showNotification('🔔 Notifications feature coming soon!', 'info');
       });
     });
 
     // Subscribe button handlers
     subscribeBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        alert('❤️ Subscribe feature coming soon!');
+        this._showNotification('❤️ Subscribe feature coming soon!', 'info');
       });
     });
 
