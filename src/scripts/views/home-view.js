@@ -51,6 +51,11 @@ class HomeView {
     });
   }
 
+  // Tambahkan metode ini untuk menangani navigasi
+  navigateToStoryDetail(storyId) {
+    window.location.hash = `#/story/${storyId}`;
+  }
+
   getMapContainerId() {
     return 'stories-map';
   }

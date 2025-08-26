@@ -1,3 +1,5 @@
+import AuthModel from '../models/auth-model';
+
 class LoginPresenter {
   constructor(view, model) {
     this.view = view;
@@ -20,16 +22,10 @@ class LoginPresenter {
     this.view.setLoadingState(true);
 
     try {
-      const loginResult = await this.model.login(email, password);
+      // Presenter memanggil Model, dan Model yang mengurus penyimpanan
+      await this.model.login(email, password);
       
-      localStorage.setItem('authToken', loginResult.token);
-      localStorage.setItem('userData', JSON.stringify({
-        userId: loginResult.userId,
-        name: loginResult.name,
-        email: email
-      }));
-      
-      this.view.showNotification('Login successful! Redirecting...', 'success');
+      this.view.showNotification('Login berhasil! Mengalihkan halaman...', 'success');
       setTimeout(() => {
         window.location.hash = '#/';
         window.location.reload();
@@ -47,12 +43,12 @@ class LoginPresenter {
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
-      this.view.showError('email', 'Please enter a valid email address');
+      this.view.showError('email', 'Harap masukkan alamat email yang valid');
       isValid = false;
     }
     
     if (!password || password.length < 6) {
-      this.view.showError('password', 'Password must be at least 6 characters long');
+      this.view.showError('password', 'Kata sandi minimal 6 karakter');
       isValid = false;
     }
     

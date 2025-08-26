@@ -14,8 +14,6 @@ class AddStoryPresenter {
     this.lon = null;
     this.leafletMap = null;
     this.mapMarker = null;
-
-    this._handlePageChange = this._handlePageChange.bind(this);
   }
 
   async init() {
@@ -27,13 +25,10 @@ class AddStoryPresenter {
       onPhotoSelected: this._handlePhotoSelected.bind(this),
     });
 
-    window.addEventListener('hashchange', this._handlePageChange);
-
     this._initializePage();
   }
 
   destroy() {
-    window.removeEventListener('hashchange', this._handlePageChange);
     this._stopCameraStreamIfActive();
   }
 
@@ -43,10 +38,6 @@ class AddStoryPresenter {
       this.currentStream = null;
       console.log('Kamera dihentikan karena navigasi halaman.');
     }
-  }
-
-  _handlePageChange() {
-    this._stopCameraStreamIfActive();
   }
 
   async _initializePage() {

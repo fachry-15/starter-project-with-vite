@@ -35,7 +35,7 @@ class HomePage {
           <div style="font-size: 3.5rem; color: var(--primary-color); margin-bottom: 20px;">🔒</div>
           <h2>Kamu harus login terlebih dahulu</h2>
           <p style="color: #666; margin: 15px 0 25px;">Untuk melihat seluruh cerita, silakan login ke akun kamu</p>
-          <a href="#/auth/login" class="btn">Login Sekarang</a>
+          <a href="#/login" class="btn">Login Sekarang</a>
         </div>
         
         <div id="error-state" style="display: none; text-align: center; padding: 40px;">

@@ -17,20 +17,18 @@ class HomePresenter {
   }
 
   async init() {
-    // Inisialisasi event listener di View, dan Presenter yang menangani aksi tersebut
     this.view.initListeners({
       onToggleMap: this._handleToggleMap.bind(this),
       onCloseMap: this._handleCloseMap.bind(this),
       onRetry: this._loadStories.bind(this),
       onLoginRequired: () => {
-        window.location.hash = '#/auth/login';
+        window.location.hash = '#/login';
       },
       onLoadMore: this._handleLoadMore.bind(this),
       onViewStory: this._handleViewStory.bind(this),
       onViewChange: this._handleViewChange.bind(this),
     });
 
-    // Presenter memulai proses pemuatan data
     await this._loadStories();
   }
 
@@ -155,8 +153,9 @@ class HomePresenter {
     }, 500);
   }
 
+  // Presenter sekarang hanya memanggil fungsi di View
   _handleViewStory(storyId) {
-    window.location.hash = `#/story/${storyId}`;
+    this.view.navigateToStoryDetail(storyId);
   }
 
   _handleViewChange(view) {

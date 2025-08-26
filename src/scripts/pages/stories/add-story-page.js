@@ -4,6 +4,11 @@ import StoryModel from '../../models/story-model';
 import 'leaflet/dist/leaflet.css';
 
 export default class AddStoryPage {
+  constructor() {
+    this.addStoryView = new AddStoryView();
+    this.addStoryPresenter = null;
+  }
+
   async render() {
     return `
       <div class="story-add-container">
@@ -69,7 +74,14 @@ export default class AddStoryPage {
     }
     
     const addStoryView = new AddStoryView();
-    const addStoryPresenter = new AddStoryPresenter(addStoryView, StoryModel);
-    addStoryPresenter.init();
+    this.addStoryPresenter = new AddStoryPresenter(addStoryView, StoryModel);
+    this.addStoryPresenter.init();
+  }
+
+  // Tambahkan metode destroy untuk mengelola lifecycle presenter
+  destroy() {
+    if (this.addStoryPresenter) {
+      this.addStoryPresenter.destroy();
+    }
   }
 }
