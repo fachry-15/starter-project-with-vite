@@ -1,6 +1,7 @@
 import routes from '../routes/routes';
 import { getActiveRoute } from '../routes/url-parser';
 import { showNotification } from '../utils/index.js';
+import { subscribe } from '../utils/notification-helper.js'; // Impor fungsi subscribe dari file baru
 
 class App {
   #content = null;
@@ -81,7 +82,7 @@ class App {
 
     notificationBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        showNotification('🔔 Notifications feature coming soon!', 'info');
+        subscribe(); // Mengganti showNotification dengan subscribe()
       });
     });
 

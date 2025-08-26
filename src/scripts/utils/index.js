@@ -12,6 +12,25 @@ export function sleep(time = 1000) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
+export function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    console.log('Browser ini tidak mendukung notifikasi desktop.');
+    return;
+  }
+
+  Notification.requestPermission().then(permission => {
+    if (permission === 'granted') {
+      showNotification('Izin notifikasi diberikan. Sekarang Anda bisa menerima notifikasi push!', 'success');
+    } else if (permission === 'denied') {
+      showNotification('Izin notifikasi ditolak. Anda tidak akan menerima notifikasi push.', 'error');
+    } else {
+      showNotification('Izin notifikasi ditolak secara default.', 'info');
+    }
+  }).catch(error => {
+    console.error('Terjadi kesalahan saat meminta izin notifikasi:', error);
+  });
+}
+
 export function showNotification(message, type) {
   const notification = document.createElement('div');
   notification.className = `notification notification-${type}`;
