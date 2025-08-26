@@ -5,6 +5,9 @@ import '../styles/styles.css';
 import L from 'leaflet';
 import markerIcon from '/images/image.png?url';
 
+// Service Worker
+import { registerServiceWorker } from './utils/index';
+
 const customIcon = L.icon({
   iconUrl: markerIcon,
   iconSize: [32, 32],      // Ukuran sesuai gambar
@@ -43,4 +46,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       header.classList.remove('scrolled');
     }
   });
+
+  await registerServiceWorker();
 });
