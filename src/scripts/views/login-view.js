@@ -68,6 +68,13 @@ class LoginView {
   showNotification(message, type) {
     showNotification(message, type);
   }
+  
+  redirectToHome() {
+    setTimeout(() => {
+      window.location.hash = '#/';
+      window.location.reload();
+    }, 1500);
+  }
 }
 
 export default LoginView;

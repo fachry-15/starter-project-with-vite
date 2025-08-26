@@ -108,6 +108,12 @@ class RegisterView {
   showNotification(message, type) {
     showNotification(message, type);
   }
+  
+  redirectToLogin() {
+    setTimeout(() => {
+      window.location.hash = '#/login';
+    }, 2000);
+  }
 }
 
 export default RegisterView;

@@ -156,6 +156,12 @@ class AddStoryView {
     this.submitBtn.disabled = loading;
     this.submitBtn.innerHTML = loading ? '<i class="fas fa-spinner fa-spin"></i> Mengirim...' : '<i class="fas fa-plus"></i> Tambah Cerita';
   }
+  
+  redirectToHome() {
+    setTimeout(() => {
+      window.location.hash = '#/';
+    }, 1500);
+  }
 }
 
 export default AddStoryView;

@@ -99,10 +99,7 @@ class AddStoryPresenter {
 
       showNotification('Cerita berhasil ditambahkan!', 'success');
       this.view.setLoadingState(false);
-      setTimeout(() => {
-        window.location.hash = '#/';
-      }, 1500);
-
+      this.view.redirectToHome(); // Perbaikan: Memanggil metode View
     } catch (error) {
       showNotification(error.message, 'error');
       this.view.setLoadingState(false);

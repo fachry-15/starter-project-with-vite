@@ -22,7 +22,7 @@ class HomePresenter {
       onCloseMap: this._handleCloseMap.bind(this),
       onRetry: this._loadStories.bind(this),
       onLoginRequired: () => {
-        window.location.hash = '#/login';
+        this.view.navigateToLogin(); // Perbaikan: Memanggil metode View
       },
       onLoadMore: this._handleLoadMore.bind(this),
       onViewStory: this._handleViewStory.bind(this),
@@ -153,9 +153,8 @@ class HomePresenter {
     }, 500);
   }
 
-  // Presenter sekarang hanya memanggil fungsi di View
   _handleViewStory(storyId) {
-    this.view.navigateToStoryDetail(storyId);
+    this.view.navigateToStoryDetail(storyId); // Perbaikan: Memanggil metode View
   }
 
   _handleViewChange(view) {

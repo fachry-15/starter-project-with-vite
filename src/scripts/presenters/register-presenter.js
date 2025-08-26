@@ -31,9 +31,7 @@ class RegisterPresenter {
       
       this.view.showNotification('Account created successfully! Please sign in.', 'success');
       
-      setTimeout(() => {
-        window.location.hash = '#/login';
-      }, 2000);
+      this.view.redirectToLogin(); // Perbaikan: Memanggil metode View
       
     } catch (error) {
       this.view.showNotification(error.message, 'error');

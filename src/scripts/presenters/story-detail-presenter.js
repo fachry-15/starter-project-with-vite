@@ -55,12 +55,11 @@ class StoryDetailPresenter {
   }
   
   _handleBack() {
-    window.location.hash = '#/';
+    this.view.navigateToHome(); // Perbaikan: Memanggil metode View
   }
 
   _handleOpenMap(lat, lon) {
-    const url = `http://maps.google.com/maps?q=${lat},${lon}`;
-    window.open(url, '_blank');
+    this.view.openInGoogleMaps(lat, lon); // Perbaikan: Memanggil metode View
   }
 
   _initializeMap(lat, lon, name, description) {

@@ -26,10 +26,7 @@ class LoginPresenter {
       await this.model.login(email, password);
       
       this.view.showNotification('Login berhasil! Mengalihkan halaman...', 'success');
-      setTimeout(() => {
-        window.location.hash = '#/';
-        window.location.reload();
-      }, 1500);
+      this.view.redirectToHome(); // Perbaikan: Memanggil metode View
       
     } catch (error) {
       this.view.showNotification(error.message, 'error');

@@ -51,9 +51,14 @@ class HomeView {
     });
   }
 
-  // Tambahkan metode ini untuk menangani navigasi
+  // Metode baru untuk menangani navigasi
   navigateToStoryDetail(storyId) {
     window.location.hash = `#/story/${storyId}`;
+  }
+  
+  // Metode baru untuk mengarahkan ke halaman login
+  navigateToLogin() {
+    window.location.hash = '#/login';
   }
 
   getMapContainerId() {

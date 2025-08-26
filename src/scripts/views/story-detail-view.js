@@ -36,6 +36,15 @@ class StoryDetailView {
       });
     }
   }
+  
+  navigateToHome() {
+    window.location.hash = '#/';
+  }
+  
+  openInGoogleMaps(lat, lon) {
+    const url = `http://maps.google.com/maps?q=${lat},${lon}`;
+    window.open(url, '_blank');
+  }
 
   renderStory(story) {
     const loadingState = document.getElementById('loading-state');

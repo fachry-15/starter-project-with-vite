@@ -3,7 +3,7 @@ import '../styles/styles.css';
 
 // Custom Leaflet marker fix
 import L from 'leaflet';
-import markerIcon from '../public/images/image.png';
+import markerIcon from '/images/image.png?url';
 
 const customIcon = L.icon({
   iconUrl: markerIcon,
