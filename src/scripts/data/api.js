@@ -7,8 +7,9 @@ const ENDPOINTS = {
   LOGIN: `${API_BASE_URL}/login`,
   STORIES: `${API_BASE_URL}/stories`,
   ADD_STORY: `${API_BASE_URL}/stories`,
-  ADD_GUEST_STORY: `${API_BASE_URL}/stories/guest`, // New endpoint for guest stories
+  ADD_GUEST_STORY: `${API_BASE_URL}/stories/guest`,
   STORY_DETAIL: (id) => `${API_BASE_URL}/stories/${id}`,
+  NOTIFICATIONS_SUBSCRIBE: `${API_BASE_URL}/notifications/subscribe`,
 };
 
 // Authentication API Functions
@@ -236,6 +237,44 @@ export async function addGuestStory({ description, photo, lat, lon }) {
     };
   }
 }
+
+// Notification API Functions
+export async function subscribePushNotification(data) {
+  try {
+    const response = await makeAuthenticatedRequest(ENDPOINTS.NOTIFICATIONS_SUBSCRIBE, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return {
+      ok: true,
+      message: response.message,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error.message,
+    };
+  }
+}
+
+export async function unsubscribePushNotification(data) {
+  try {
+    const response = await makeAuthenticatedRequest(ENDPOINTS.NOTIFICATIONS_SUBSCRIBE, {
+      method: 'DELETE',
+      body: JSON.stringify(data),
+    });
+    return {
+      ok: true,
+      message: response.message,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error.message,
+    };
+  }
+}
+
 
 // Utility function for authenticated requests
 export async function makeAuthenticatedRequest(url, options = {}) {

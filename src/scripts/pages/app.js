@@ -1,7 +1,15 @@
 import routes from '../routes/routes';
 import { getActiveRoute } from '../routes/url-parser';
 import { showNotification } from '../utils/index.js';
-import { subscribe } from '../utils/notification-helper.js'; // Impor fungsi subscribe dari file baru
+import {
+  isCurrentPushSubscriptionAvailable,
+  subscribe,
+  unsubscribe
+} from '../utils/notification-helper.js';
+import {
+  generateSubscribeButtonTemplate,
+  generateUnsubscribeButtonTemplate
+} from '../utils/ui-templates.js';
 
 class App {
   #content = null;
@@ -9,14 +17,17 @@ class App {
   #navigationDrawer = null;
   #isLoggedIn = false;
   #currentPageInstance = null;
+  #pushNotificationTools = null;
 
   constructor({ navigationDrawer, drawerButton, content }) {
     this.#content = content;
     this.#drawerButton = drawerButton;
     this.#navigationDrawer = navigationDrawer;
+    this.#pushNotificationTools = document.getElementById('push-notification-tools');
 
     this.#setupDrawer();
     this.#setupAuth();
+    this.#setupPushNotification();
     
     const currentRoute = getActiveRoute();
     this.#updateActiveNavigation(currentRoute);
@@ -82,17 +93,40 @@ class App {
 
     notificationBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        subscribe(); // Mengganti showNotification dengan subscribe()
+        showNotification('❤️ Fitur notifikasi coming soon!', 'info');
       });
     });
 
     subscribeBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        showNotification('❤️ Subscribe feature coming soon!', 'info');
+        showNotification('❤️ Fitur berlangganan akan segera hadir!', 'info');
       });
     });
 
     this.#updateAuthUI();
+  }
+
+  async #setupPushNotification() {
+    if (!this.#pushNotificationTools) return;
+
+    const isSubscribed = await isCurrentPushSubscriptionAvailable();
+
+    if (isSubscribed) {
+      this.#pushNotificationTools.innerHTML = generateUnsubscribeButtonTemplate();
+      document.getElementById('unsubscribe-button').addEventListener('click', () => {
+        unsubscribe().finally(() => {
+          this.#setupPushNotification();
+        });
+      });
+      return;
+    }
+
+    this.#pushNotificationTools.innerHTML = generateSubscribeButtonTemplate();
+    document.getElementById('subscribe-button').addEventListener('click', () => {
+      subscribe().finally(() => {
+        this.#setupPushNotification();
+      });
+    });
   }
 
   #login() {
@@ -106,7 +140,7 @@ class App {
     this.#isLoggedIn = false;
     this.#updateAuthUI();
     
-    showNotification('👋 Logout successful! See you later!', 'success');
+    showNotification('👋 Berhasil keluar! Sampai jumpa lagi!', 'success');
     
     window.location.hash = '#/';
   }
@@ -137,12 +171,10 @@ class App {
     const url = getActiveRoute();
     const page = routes[url];
     
-    // Check if previous page instance has a destroy method and call it.
     if (this.#currentPageInstance && typeof this.#currentPageInstance.destroy === 'function') {
       this.#currentPageInstance.destroy();
     }
     
-    // Create new page instance if it's a class
     this.#currentPageInstance = (typeof page === 'function') ? new page() : page;
 
     if (document.startViewTransition) {

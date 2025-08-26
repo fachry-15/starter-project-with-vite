@@ -3,7 +3,8 @@ const CONFIG = {
   API_TIMEOUT: 10000,
   TOKEN_KEY: 'authToken',
   USER_DATA_KEY: 'userData',
-  MAPTILER_API_KEY: 'kRBYBydfrDFjAKy17EEg', // Tambahkan baris ini
+  MAPTILER_API_KEY: 'kRBYBydfrDFjAKy17EEg',
+  VAPID_PUBLIC_KEY: 'BCCs2eonMI-6H2ctvFaWg-UYdDv387Vno_bzUzALpB442r2lCnsHmtrx8biyPi_E-1fSGABK_Qs_GlvPoJJqxbk'
 };
 
 export default CONFIG;
