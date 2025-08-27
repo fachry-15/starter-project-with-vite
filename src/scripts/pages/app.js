@@ -1,3 +1,5 @@
+// File: src/scripts/pages/app.js
+
 import routes from '../routes/routes';
 import { getActiveRoute } from '../routes/url-parser';
 import { showNotification } from '../utils/index.js';
@@ -169,7 +171,12 @@ class App {
 
   async renderPage() {
     const url = getActiveRoute();
-    const page = routes[url];
+    let page = routes[url];
+    
+    // Logic for Not Found Page
+    if (!page) {
+      page = new routes['404']();
+    }
     
     if (this.#currentPageInstance && typeof this.#currentPageInstance.destroy === 'function') {
       this.#currentPageInstance.destroy();
@@ -215,18 +222,14 @@ class App {
     if (currentLink) {
       currentLink.classList.add('active');
     }
-    
-    // Perbarui logika untuk tautan di drawer navigasi
+
     document.querySelectorAll('.nav-list a').forEach(link => {
       link.classList.remove('active');
       const linkHref = link.getAttribute('href');
-      
-      // Menggunakan logika yang lebih akurat untuk rute dinamis seperti '/story/:id'
       if (linkHref === `#${currentRoute}` || (currentRoute.startsWith('#/story/') && linkHref === '#/stories')) {
         link.classList.add('active');
       }
       
-      // Handle untuk rute Saved Stories
       if (linkHref === `#/saved-stories` && currentRoute === `#/saved-stories`) {
         link.classList.add('active');
       }
