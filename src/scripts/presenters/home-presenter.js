@@ -1,8 +1,12 @@
+// File: src/scripts/presenters/home-presenter.js
+
 import StoryModel from '../models/story-model.js';
 import HomeView from '../views/home-view.js';
 import CONFIG from '../config.js';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { addStoryToIndexedDB, deleteStoryFromIndexedDB, getSavedStory } from '../utils/idb-helper.js';
+import { showNotification } from '../utils/index.js'; // Import showNotification
 
 class HomePresenter {
   constructor(view, model) {
@@ -22,11 +26,12 @@ class HomePresenter {
       onCloseMap: this._handleCloseMap.bind(this),
       onRetry: this._loadStories.bind(this),
       onLoginRequired: () => {
-        this.view.navigateToLogin(); // Perbaikan: Memanggil metode View
+        this.view.navigateToLogin();
       },
       onLoadMore: this._handleLoadMore.bind(this),
       onViewStory: this._handleViewStory.bind(this),
       onViewChange: this._handleViewChange.bind(this),
+      onToggleSaveStory: this._handleToggleSaveStory.bind(this),
     });
 
     await this._loadStories();
@@ -154,11 +159,27 @@ class HomePresenter {
   }
 
   _handleViewStory(storyId) {
-    this.view.navigateToStoryDetail(storyId); // Perbaikan: Memanggil metode View
+    this.view.navigateToStoryDetail(storyId);
   }
 
   _handleViewChange(view) {
     this.view.updateStoriesLayout(view);
+  }
+  
+  async _handleToggleSaveStory(storyId) {
+    const savedStory = await getSavedStory(storyId);
+    if (savedStory) {
+      await deleteStoryFromIndexedDB(storyId);
+      showNotification('Cerita berhasil dihapus dari daftar simpan.', 'success');
+    } else {
+      const storyToSave = this.allStories.find(story => story.id === storyId);
+      if (storyToSave) {
+        await addStoryToIndexedDB(storyToSave);
+        showNotification('Cerita berhasil disimpan!', 'success');
+      }
+    }
+    // Refresh the view to update the button state
+    await this._loadMoreStories();
   }
 }
 

@@ -1,3 +1,5 @@
+// File: src/scripts/pages/home/home-page.js
+
 import HomePresenter from '../../presenters/home-presenter.js';
 import HomeView from '../../views/home-view.js';
 import StoryModel from '../../models/story-model.js';
@@ -80,16 +82,13 @@ class HomePage {
   }
 
   async afterRender() {
-    // Menghapus kelas 'auth-page' dari konten utama jika ada.
     const mainContent = document.getElementById('main-content');
     if (mainContent) {
       mainContent.classList.remove('auth-page');
     }
 
-    // Menginisialisasi View dan Presenter
     const homeView = new HomeView();
     const homePresenter = new HomePresenter(homeView, StoryModel);
-    // Presenter mengambil alih seluruh kendali
     homePresenter.init();
   }
 }

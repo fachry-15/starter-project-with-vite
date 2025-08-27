@@ -1,5 +1,8 @@
+// File: src/scripts/views/home-view.js
+
 import L from 'leaflet';
 import CONFIG from '../config.js';
+import { getSavedStory } from '../utils/idb-helper.js';
 
 class HomeView {
   constructor() {
@@ -38,14 +41,18 @@ class HomeView {
       });
     }
     // Add event listeners for dynamically rendered cards
-    this.container.addEventListener('click', (event) => {
+    this.container.addEventListener('click', async (event) => {
       const btn = event.target.closest('.btn-view-story');
+      const saveBtn = event.target.closest('.btn-save-story'); // New save button listener
+      const card = event.target.closest('.story-card');
+      
       if (btn) {
         event.stopPropagation();
         handlers.onViewStory(btn.dataset.storyId);
-      }
-      const card = event.target.closest('.story-card');
-      if (card && !btn) {
+      } else if (saveBtn) {
+        event.stopPropagation();
+        handlers.onToggleSaveStory(saveBtn.dataset.storyId);
+      } else if (card && !btn) {
         handlers.onViewStory(card.dataset.storyId);
       }
     });
@@ -163,42 +170,56 @@ class HomeView {
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     };
 
-    this.container.innerHTML = stories.map(story => `
-      <div class="story-card fade-in-up" data-story-id="${story.id}" style="box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; background-color: white;">
-        <div class="story-image" style="position: relative; height: 200px; overflow: hidden;">
-          ${story.photoUrl 
-            ? `<img src="${story.photoUrl}" alt="${story.name}'s story" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">`
-            : `<div style="width: 100%; height: 200px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">📖</div>`
-          }
-          <div class="story-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s ease; display: flex; align-items: center; justify-content: center;">
-            <button class="btn-view-story" data-story-id="${story.id}" style="padding: 8px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">
-              <i class="fas fa-eye"></i> Lihat Cerita
+    // New logic to check for saved stories and render the appropriate button
+    const renderStoryWithSaveButton = async (story) => {
+      const isSaved = !!(await getSavedStory(story.id));
+      const saveButtonText = isSaved ? 'Hapus dari Simpan' : 'Simpan Cerita';
+      const saveButtonIcon = isSaved ? 'fas fa-heart-crack' : 'far fa-bookmark';
+      
+      return `
+        <div class="story-card fade-in-up" data-story-id="${story.id}" style="box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; background-color: white;">
+          <div class="story-image" style="position: relative; height: 200px; overflow: hidden;">
+            ${story.photoUrl 
+              ? `<img src="${story.photoUrl}" alt="${story.name}'s story" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">`
+              : `<div style="width: 100%; height: 200px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">📖</div>`
+            }
+            <div class="story-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s ease; display: flex; align-items: center; justify-content: center;">
+              <button class="btn-view-story" data-story-id="${story.id}" style="padding: 8px 16px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                <i class="fas fa-eye"></i> Lihat Cerita
+              </button>
+            </div>
+          </div>
+          <div class="story-content" style="padding: 16px;">
+            <div class="story-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <div class="story-author" style="display: flex; align-items: center;">
+                <div class="author-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; margin-right: 12px;">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="author-info">
+                  <p class="author-name" style="font-weight: bold; margin: 0;">${story.name}</p>
+                  <p class="story-date" style="font-size: 0.8rem; color: #666; margin: 0;">${formatDate(story.createdAt)}</p>
+                </div>
+              </div>
+              ${story.lat && story.lon ? `
+                <div class="story-location" style="font-size: 0.8rem; color: #666; cursor: pointer; text-align: right; max-width: 150px;" title="${story.locationName || 'Lokasi tersedia'}" onclick="window.open('https://www.openstreetmap.org/?mlat=${story.lat}&mlon=${story.lon}&zoom=15', '_blank')">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>${truncateLocation(story.locationName || 'Lokasi tersedia')}</span>
+                </div>
+              ` : ''}
+            </div>
+            <h3 class="story-title" style="font-size: 1.2rem; margin: 0 0 10px 0;">${story.description.split(' ').slice(0, 5).join(' ')}...</h3>
+            <p class="story-excerpt" style="font-size: 0.9rem; color: #666; margin-bottom: 16px; line-height: 1.5;">${truncateText(story.description, 120)}</p>
+            <button class="btn btn-secondary btn-save-story" data-story-id="${story.id}">
+              <i class="${saveButtonIcon}"></i> ${saveButtonText}
             </button>
           </div>
         </div>
-        <div class="story-content" style="padding: 16px;">
-          <div class="story-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-            <div class="story-author" style="display: flex; align-items: center;">
-              <div class="author-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; color: white; margin-right: 12px;">
-                <i class="fas fa-user"></i>
-              </div>
-              <div class="author-info">
-                <p class="author-name" style="font-weight: bold; margin: 0;">${story.name}</p>
-                <p class="story-date" style="font-size: 0.8rem; color: #666; margin: 0;">${formatDate(story.createdAt)}</p>
-              </div>
-            </div>
-            ${story.lat && story.lon ? `
-              <div class="story-location" style="font-size: 0.8rem; color: #666; cursor: pointer; text-align: right; max-width: 150px;" title="${story.locationName || 'Lokasi tersedia'}" onclick="window.open('https://www.openstreetmap.org/?mlat=${story.lat}&mlon=${story.lon}&zoom=15', '_blank')">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>${truncateLocation(story.locationName || 'Lokasi tersedia')}</span>
-              </div>
-            ` : ''}
-          </div>
-          <h3 class="story-title" style="font-size: 1.2rem; margin: 0 0 10px 0;">${story.description.split(' ').slice(0, 5).join(' ')}...</h3>
-          <p class="story-excerpt" style="font-size: 0.9rem; color: #666; margin-bottom: 16px; line-height: 1.5;">${truncateText(story.description, 120)}</p>
-        </div>
-      </div>
-    `).join('');
+      `;
+    };
+
+    Promise.all(stories.map(renderStoryWithSaveButton)).then(htmlArray => {
+      this.container.innerHTML = htmlArray.join('');
+    });
   }
 
   updateLoadMoreButton(displayedCount, totalCount, hasMore) {

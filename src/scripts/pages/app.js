@@ -215,10 +215,19 @@ class App {
     if (currentLink) {
       currentLink.classList.add('active');
     }
-
+    
+    // Perbarui logika untuk tautan di drawer navigasi
     document.querySelectorAll('.nav-list a').forEach(link => {
       link.classList.remove('active');
-      if (link.getAttribute('href') === `#${currentRoute}`) {
+      const linkHref = link.getAttribute('href');
+      
+      // Menggunakan logika yang lebih akurat untuk rute dinamis seperti '/story/:id'
+      if (linkHref === `#${currentRoute}` || (currentRoute.startsWith('#/story/') && linkHref === '#/stories')) {
+        link.classList.add('active');
+      }
+      
+      // Handle untuk rute Saved Stories
+      if (linkHref === `#/saved-stories` && currentRoute === `#/saved-stories`) {
         link.classList.add('active');
       }
     });
